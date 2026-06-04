@@ -1,0 +1,13 @@
+# SOURCE: Generate fake syslog events (built into Vector)
+[sources.fake_windows_events]
+type = "demo_logs"
+format = "json"
+interval = 1.0
+
+# SINK: Send to Redpanda
+[sinks.redpanda_raw]
+type = "kafka"
+inputs = ["fake_windows_events"]
+bootstrap_servers = "redpanda:9092"
+topic = "raw.windows-events"
+encoding.codec = "json"

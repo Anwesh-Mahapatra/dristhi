@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "OCSFAuthEvent",
+  "namespace": "io.drishti.ocsf",
+  "fields": [
+    {"name": "class_uid", "type": "int"},
+    {"name": "type_uid", "type": "int"},
+    {"name": "time", "type": "long"},
+    {"name": "severity_id", "type": "int"},
+    {"name": "src_ip", "type": ["null", "string"], "default": null},
+    {"name": "user_name", "type": ["null", "string"], "default": null},
+    {"name": "computer", "type": "string"},
+    {"name": "outcome", "type": "string"},
+    {"name": "raw_event_id", "type": "int"}
+  ]
+}

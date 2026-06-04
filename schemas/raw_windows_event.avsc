@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "RawWindowsEvent",
+  "namespace": "io.drishti.raw",
+  "fields": [
+    {"name": "event_id", "type": "int"},
+    {"name": "time_created", "type": "long"},
+    {"name": "computer", "type": "string"},
+    {"name": "user", "type": ["null", "string"], "default": null},
+    {"name": "logon_type", "type": ["null", "int"], "default": null},
+    {"name": "ip_address", "type": ["null", "string"], "default": null},
+    {"name": "message", "type": "string"}
+  ]
+}
