@@ -15,6 +15,11 @@ SCHEMAS = [
         "subject": "normalized.events-value",
         "path": "schemas/ocsf_auth_event.avsc",
         "schema_type": "AVRO"
+    },
+    {
+        "subject": "alerts.detections-value",
+        "path": "schemas/alert.avsc",
+        "schema_type": "AVRO"
     }
 ]
 
