@@ -9,6 +9,7 @@
     {"name": "user", "type": ["null", "string"], "default": null},
     {"name": "logon_type", "type": ["null", "int"], "default": null},
     {"name": "ip_address", "type": ["null", "string"], "default": null},
-    {"name": "message", "type": "string"}
+    {"name": "message", "type": "string"},
+    {"name": "tenant_id", "type": ["null", "string"], "default": null}
   ]
 }

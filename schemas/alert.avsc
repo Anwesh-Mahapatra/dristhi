@@ -8,6 +8,7 @@
     {"name": "timestamp",     "type": "string"},
     {"name": "user_name",     "type": ["null", "string"], "default": null},
     {"name": "src_ip",        "type": ["null", "string"], "default": null},
-    {"name": "matched_event", "type": "string"}
+    {"name": "matched_event", "type": "string"},
+    {"name": "tenant_id", "type": ["null", "string"], "default": null}
   ]
 }

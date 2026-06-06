@@ -11,6 +11,7 @@
     {"name": "user_name", "type": ["null", "string"], "default": null},
     {"name": "computer", "type": "string"},
     {"name": "outcome", "type": "string"},
-    {"name": "raw_event_id", "type": "int"}
+    {"name": "raw_event_id", "type": "int"},
+    {"name": "tenant_id", "type": ["null", "string"], "default": null}
   ]
 }
