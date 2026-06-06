@@ -16,7 +16,7 @@ class AlertProducer:
         # to_dict callable: AvroSerializer hands us (obj, ctx); we already pass a dict, so identity.
         self._avro = AvroSerializer(sr_client, alert_schema_str, lambda obj, ctx: obj)
         self._key = StringSerializer("utf_8")
-        self._producer = Producer({"bootstrap.servers": config.BOOTSTRAP_SERVERS})
+        self._producer = Producer({"bootstrap.servers": config.BOOTSTRAP_SERVERS, "linger.ms":0})
 
     def send(self, alert_dict: dict, key: str | None = None):
         # SerializationContext ties the payload to topic+field so SR picks the right subject
