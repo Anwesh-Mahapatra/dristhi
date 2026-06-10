@@ -1,0 +1,35 @@
+title: Brute Force Failed Logon
+id: a1b2c3d4-0001-0001-0001-000000000001
+status: experimental
+description: >
+  Detects 5 or more failed logon attempts (EventID 4625) from the same
+  source IP within a 5-minute sliding window. Covers password spraying
+  and credential stuffing against domain accounts and service accounts.
+author: Drishti
+date: 2026/06/07
+level: high
+
+logsource:
+  category: authentication
+
+detection:
+  selection:
+    outcome: 'Failure'
+    raw_event_id: 4625
+  condition: selection
+
+# drishti: is a Drishti-specific extension block.
+# It is NOT standard Sigma — pySigma stores it in rule.custom_attributes['drishti'].
+# The detection engine reads this to route the rule through state.py
+# (sliding-window deque) instead of the stateless matcher.
+#
+# window_seconds: how far back to look for events (300 = 5 minutes)
+# threshold:      how many matching events within the window trigger an alert
+# group_by:       which field to count per (src_ip = one counter per attacker IP)
+drishti:
+  type: sliding_window
+  group_by: src_ip
+  window_seconds: 300
+  threshold: 5
+  alert_title: Brute Force Failed Logon
+  alert_level: high

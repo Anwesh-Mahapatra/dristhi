@@ -1,0 +1,35 @@
+title: After Hours Successful Logon
+id: c3d4e5f6-0003-0003-0003-000000000003
+status: experimental
+description: >
+  Detects successful interactive or network logons (EventID 4624) outside
+  business hours. In Phase 1 this fires on ALL successful logins — the
+  time-of-day check is added in Phase 2 when the normalizer enriches
+  events with an is_business_hours boolean field. For now use it to
+  verify the stateless matching path works end to end.
+author: Drishti
+date: 2026/06/07
+level: medium
+
+logsource:
+  category: authentication
+
+detection:
+  selection:
+    outcome: 'Success'
+    raw_event_id: 4624
+  condition: selection
+
+# drishti: marks this for after-hours time checking.
+# Phase 1: engine ignores the time_check type and fires on every match.
+# Phase 2: normalizer adds is_business_hours boolean to each event;
+#          rule gains a filter block:
+#            filter: { is_business_hours: true }
+#            condition: selection and not filter
+#          engine routes through after_hours handler in state.py.
+drishti:
+  type: after_hours
+  business_start_hour: 7
+  business_end_hour: 19
+  alert_title: After Hours Successful Logon
+  alert_level: medium

@@ -1,0 +1,24 @@
+title: New User Account Created
+id: b2c3d4e5-0002-0002-0002-000000000002
+status: experimental
+description: >
+  Detects creation of a new user account (EventID 4720).
+  Adversaries create backdoor accounts after gaining a foothold.
+  Also fires on legitimate provisioning — tune by excluding known
+  provisioning service accounts in a filter block once you have
+  baseline data.
+author: Drishti
+date: 2026/06/07
+level: medium
+
+logsource:
+  category: authentication
+
+detection:
+  selection:
+    raw_event_id: 4720
+  condition: selection
+
+# No drishti: block — this is a pure stateless rule.
+# Every single 4720 event triggers an alert immediately.
+# The engine routes it through matcher.py directly.

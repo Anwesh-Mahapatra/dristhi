@@ -26,34 +26,58 @@ class MatchSpec:
     correlation: Optional[CorrelationSpec] = None
 
 def load_rules() -> list[MatchSpec]:
-    # [GIVEN] pySigma parses the whole directory into SigmaRule objects.
-    collection = SigmaCollection.load_ruleset([config.RULES_DIR])   # recursion_pattern defaults to **/*.yml
+    collection = SigmaCollection.load_ruleset([config.RULES_DIR])
     specs: list[MatchSpec] = []
     for rule in collection.rules:
-        specs.append(_to_match_spec(rule))
+        spec = _to_match_spec(rule)
+        print(f"\n--- {spec.name} ---")
+        print(f"  level: {spec.level}")
+        print(f"  condition: {spec.condition}")
+        for dname, items in spec.selections.items():
+            for field, mods, values in items:
+                print(f"  [{dname}] field={field} mods={mods} values={values}")
+        if spec.correlation:
+            print(f"  correlation: {spec.correlation}")
+        specs.append(spec)
     return specs
 
 def _to_match_spec(rule) -> MatchSpec:
-    """[YOURS] Translate a parsed pySigma SigmaRule into your MatchSpec.
+    name = str(rule.title)
+    level = rule.level.name.lower()
 
-    Introspect the parsed structure FIRST so you map the right attributes for your version:
-        print(type(rule), rule.title, rule.level)
-        print(rule.detection.detections)   # dict: name -> SigmaDetection
-        print(rule.detection.condition)    # list of condition strings
-        for det in rule.detection.detections.values():
-            for item in det.detection_items:
-                print(item.field, item.modifiers, item.value)
-        print(getattr(rule, "custom_attributes", None))   # your drishti: block lives here (verify)
+    selections: dict = {}
+    for dname, det in rule.detection.detections.items():
+        items = []
+        for item in det.detection_items:
+            values = []
+            for v in item.value:
+                if hasattr(v, 'to_plain'):      # SigmaString
+                    values.append(v.to_plain())
+                elif hasattr(v, 'number'):      # SigmaNumber
+                    values.append(v.number)
+                else:
+                    values.append(str(v))
+            items.append((item.field, list(item.modifiers), values))
+        selections[dname] = items
 
-    TODO:
-      1. name  = str(rule.title)
-      2. level = str(rule.level)  (SigmaLevel enum -> str; map to your severity vocabulary)
-      3. selections: walk rule.detection.detections; for each detection item capture
-         (field, modifiers, values). Normalize values to a list.
-      4. condition: take rule.detection.condition[0] for the Phase-1 subset.
-      5. correlation: if the drishti block is present, build CorrelationSpec.
-         Parse window "5m"/"30s"/"1h" -> seconds with a tiny helper.
-         If custom_attributes is empty on your version, re-read the raw YAML with
-         yaml.safe_load(open(path)) keyed by rule id/title to recover the block.
-    """
-    raise NotImplementedError
+    condition = rule.detection.condition[0] if rule.detection.condition else "selection"
+
+    correlation: Optional[CorrelationSpec] = None
+    drishti = (rule.custom_attributes or {}).get('drishti')
+    if drishti:
+        correlation = CorrelationSpec(
+            type=drishti.get('type', ''),
+            group_by=drishti.get('group_by', ''),
+            window_seconds=int(drishti.get('window_seconds', 0)),
+            threshold=int(drishti.get('threshold', 1)),
+            alert_title=drishti.get('alert_title', name),
+            alert_level=drishti.get('alert_level', level),
+        )
+
+    return MatchSpec(
+        name=name,
+        level=level,
+        selections=selections,
+        condition=condition,
+        correlation=correlation,
+    )
